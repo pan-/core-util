@@ -4,7 +4,7 @@
 #include <cstdint>
 
 #include "integer_sequence.hpp"
-#include "enable_if.hpp"
+#include "type_traits/enable_if.hpp"
 
 namespace mbed { namespace meta {
 
@@ -34,12 +34,12 @@ struct make_integer_sequence_impl {
 };
 
 template<typename T, T N>
-struct make_integer_sequence_impl<T, N, enable_if_t<N == 0>> {
+struct make_integer_sequence_impl<T, N, type_traits::enable_if_t<N == 0>> {
     using type = integer_sequence<T>;
 };
 
 template<typename T, T N>
-struct make_integer_sequence_impl<T, N, enable_if_t<N == 1>> {
+struct make_integer_sequence_impl<T, N, type_traits::enable_if_t<N == 1>> {
     using type = integer_sequence<T, 0>;
 };
 

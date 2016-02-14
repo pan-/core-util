@@ -1,7 +1,7 @@
-#ifndef MBED_META_ENABLE_IF_H_
-#define MBED_META_ENABLE_IF_H_
+#ifndef MBED_TYPE_TRAITS_ENABLE_IF_H_
+#define MBED_TYPE_TRAITS_ENABLE_IF_H_
 
-namespace mbed { namespace meta {
+namespace mbed { namespace type_traits {
 
 template<bool B, typename T = void>
 struct enable_if;
@@ -14,6 +14,6 @@ struct enable_if<true, T> {
 template<bool B, typename T = void>
 using enable_if_t = typename enable_if<B, T>::type;
 
-}} // mbed::meta
+}} // mbed::type_traits
 
-#endif /* MBED_META_ENABLE_IF_H_ */
+#endif /* MBED_TYPE_TRAITS_ENABLE_IF_H_ */
