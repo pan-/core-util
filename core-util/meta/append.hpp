@@ -1,7 +1,6 @@
 #ifndef MBED_META_APPEND_H_
 #define MBED_META_APPEND_H_
 
-
 namespace mbed { namespace meta {
 
 template<typename L, typename R>
