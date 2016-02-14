@@ -2,3 +2,4 @@ yotta_modules/
 yotta_targets/
 build/
 .yotta.json
+.clang_complete
