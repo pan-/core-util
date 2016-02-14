@@ -2,7 +2,7 @@
 #define MBED_META_LENGTH_H_
 
 #include <cstdint>
-#include "integral_constant.hpp"
+#include "type_traits/integral_constant.hpp"
 
 namespace mbed { namespace meta {
 
@@ -13,7 +13,7 @@ struct length;
 template<template<typename...> class C, typename... Ts>
 struct length<C<Ts...>> {
     // this type
-    using type = integral_constant<std::size_t, sizeof...(Ts)>;
+    using type = type_traits::integral_constant<std::size_t, sizeof...(Ts)>;
 };
 
 }} // namespace mbed::meta

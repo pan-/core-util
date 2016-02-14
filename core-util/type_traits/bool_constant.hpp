@@ -1,9 +1,9 @@
-#ifndef MBED_META_BOOL_CONSTANT_H_
-#define MBED_META_BOOL_CONSTANT_H_
+#ifndef MBED_TYPE_TRAITS_BOOL_CONSTANT_H_
+#define MBED_TYPE_TRAITS_BOOL_CONSTANT_H_
 
 #include "integral_constant.hpp"
 
-namespace mbed { namespace meta {
+namespace mbed { namespace type_traits {
 
 /// Wraper of static boolean constants
 template<bool V>
@@ -15,6 +15,6 @@ using true_type = bool_constant<true>;
 /// Type representation of the boolean constant false
 using false_type = bool_constant<false>;
 
-}} // namespace mbed::meta
+}} // namespace mbed::type_traits
 
-#endif /* MBED_META_BOOL_CONSTANT_H_ */
+#endif /* MBED_TYPE_TRAITS_BOOL_CONSTANT_H_ */

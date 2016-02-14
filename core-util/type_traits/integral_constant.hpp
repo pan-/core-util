@@ -1,8 +1,7 @@
-#ifndef MBED_META_INTEGRAL_CONSTANT_H_
-#define MBED_META_INTEGRAL_CONSTANT_H_
+#ifndef MBED_TYPE_TRAITS_INTEGRAL_CONSTANT_H_
+#define MBED_TYPE_TRAITS_INTEGRAL_CONSTANT_H_
 
-namespace mbed {
-namespace meta {
+namespace mbed { namespace type_traits {
 
 /// Wraps a static constant 'V' of specified type 'T'.
 /// @tparam T type of the static constant wrapped
@@ -29,7 +28,6 @@ struct integral_constant {
     }
 };
 
-} // namespace meta
-} // namespace mbed
+}} // namespace mbed::type_traits
 
-#endif /* MBED_META_INTEGRAL_CONSTANT_H_ */
+#endif /* MBED_TYPE_TRAITS_INTEGRAL_CONSTANT_H_ */

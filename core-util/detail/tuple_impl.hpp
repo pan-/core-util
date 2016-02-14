@@ -1,5 +1,3 @@
-#include <type_traits>
-
 #include "meta/integer_sequence.hpp"
 #include "meta/at.hpp"
 #include "meta/sequence.hpp"
@@ -7,11 +5,12 @@
 
 namespace mbed { namespace detail {
 
-
 /// TODO : use EBCO
 template<std::size_t Index, typename T>
 struct tuple_leaf {
-    constexpr tuple_leaf(T&& v) : value(utility::forward<T>(v)) {}
+
+    template<typename U>
+    constexpr tuple_leaf(U&& v) : value(utility::forward<T>(v)) {}
 
     T& get() {
         return value;
@@ -32,7 +31,8 @@ struct tuple_impl;
 template<typename... Ts, std::size_t... Indices>
 struct tuple_impl<meta::index_sequence<Indices...>, Ts...> : tuple_leaf<Indices, Ts>... {
 
-    tuple_impl(Ts&&... values) : tuple_leaf<Indices, Ts>(utility::forward<Ts>(values))... {}
+    template<typename... Us>
+    tuple_impl(Us&&... values) : tuple_leaf<Indices, Ts>(utility::forward<Us>(values))... {}
 
     template<std::size_t index>
     auto get() -> meta::at_t<meta::sequence<Ts...>, index>& {
