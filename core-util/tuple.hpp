@@ -9,9 +9,12 @@
 #include "meta/make_integer_sequence.hpp"
 #include "utility/forward.hpp"
 #include "meta/transform.hpp"
+#include "meta/sort.hpp"
 #include "type_traits/bool_constant.hpp"
 
 namespace mbed {
+
+namespace detail {
 
 template<std::size_t index, typename T>
 struct indexed_element {
@@ -41,7 +44,6 @@ template<typename L, typename R>
 struct alignof_lt :
     public type_traits::bool_constant<(alignof(typename L::element_type) > alignof(typename R::element_type))> { };
 
-
 template<typename L, typename R>
 struct append_index_sequence;
 
@@ -55,7 +57,6 @@ struct append_index_sequence<
 
 template<typename L, typename R>
 using append_index_sequence_t = typename append_index_sequence<L, R>::type;
-
 
 
 template<typename T>
@@ -86,22 +87,76 @@ using extract_types_t = meta::transform_t<Seq, get_element_type_t>;
 
 
 
+template<typename... Ts>
+struct reorder {
+    using indexed_sequence = make_indexed_sequence_t<Ts...>;
+    using sorted_sequence = meta::sort_t<indexed_sequence, alignof_lt>;
+    using indices = extract_index_sequence_t<sorted_sequence>;
+    using types = extract_types_t<sorted_sequence>;
+};
+
+
+template<typename S, std::size_t index>
+struct index_sequence_at;
+
+template<std::size_t Head, std::size_t... Tail, std::size_t index>
+struct index_sequence_at<meta::index_sequence<Head, Tail...>, index> {
+    static constexpr std::size_t value =
+        index_sequence_at<meta::index_sequence<Tail...>, index - 1>::value;
+};
+
+template<std::size_t Head, std::size_t... Tail>
+struct index_sequence_at<meta::index_sequence<Head, Tail...>, 0> {
+    static constexpr std::size_t value = Head;
+};
+
+}
+
+
+
+
+
+
 
 
 template<typename... Ts>
-class tuple : public detail::tuple_impl<meta::index_sequence_for<Ts...>, Ts...> {
+class tuple : public detail::tuple_impl<
+    meta::index_sequence_for<Ts...>,
+    typename detail::reorder<Ts...>::types
+> {
 
-    using impl_type = detail::tuple_impl<meta::index_sequence_for<Ts...>, Ts...>;
+    using reordered_indices = typename detail::reorder<Ts...>::indices;
+
+    using impl_type = detail::tuple_impl<
+        meta::index_sequence_for<Ts...>,
+        typename detail::reorder<Ts...>::types
+    >;
 
 public:
     constexpr tuple() { }
 
     template<typename... Us>
-    constexpr tuple(Us&&... values) : impl_type(utility::forward<Us>(values)...) { }
+    constexpr tuple(Us&&... values) :
+        impl_type(
+            reordered_indices {},
+            detail::tuple_impl<
+                meta::index_sequence_for<Ts...>,
+                meta::sequence<Us&&...>
+            >(detail::piecewise_construct_t(), utility::forward<Us>(values)...)
+        ) {
+    }
 
+
+    template<std::size_t Index>
+    auto get() -> meta::at_t<meta::sequence<Ts...>, Index>& {
+        return impl_type::template get<detail::index_sequence_at<reordered_indices, Index>::value>();
+    }
+
+    template<std::size_t Index>
+    auto get() const -> const meta::at_t<meta::sequence<Ts...>, Index>& {
+        return impl_type::template get<detail::index_sequence_at<reordered_indices, Index>::value>();
+    }
 };
-
-
 
 
 template<typename... Ts>

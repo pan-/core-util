@@ -9,8 +9,10 @@ namespace mbed { namespace detail {
 template<std::size_t Index, typename T>
 struct tuple_leaf {
 
+    constexpr tuple_leaf() : value() {}
+
     template<typename U>
-    constexpr tuple_leaf(U&& v) : value(utility::forward<T>(v)) {}
+    constexpr tuple_leaf(U&& v) : value(utility::forward<U>(v)) {}
 
     T& get() {
         return value;
@@ -24,15 +26,32 @@ private:
     T value;
 };
 
+struct piecewise_construct_t {};
 
-template<class Indices, typename... Ts>
+
+template<class Indices, typename Seq>
 struct tuple_impl;
 
-template<typename... Ts, std::size_t... Indices>
-struct tuple_impl<meta::index_sequence<Indices...>, Ts...> : tuple_leaf<Indices, Ts>... {
+template<
+    template<typename...> class Cont, typename... Ts,
+    std::size_t... Indices>
+struct tuple_impl<meta::index_sequence<Indices...>, Cont<Ts...>> : tuple_leaf<Indices, Ts>... {
+
+    constexpr tuple_impl() : tuple_leaf<Indices, Ts>()... {}
 
     template<typename... Us>
-    tuple_impl(Us&&... values) : tuple_leaf<Indices, Ts>(utility::forward<Us>(values))... {}
+    constexpr tuple_impl(piecewise_construct_t, Us&&... values) :
+        tuple_leaf<Indices, Ts>(utility::forward<Us>(values))... {}
+
+    template<std::size_t... Mapping, typename I, template<typename...> class C, typename... Us>
+    constexpr tuple_impl(meta::index_sequence<Mapping...>, tuple_impl<I, C<Us&&...>>&& values) :
+        tuple_leaf<Indices, Ts>(
+            utility::forward<meta::at_t<C<Us&&...>, Mapping>>(
+                values.template get<Mapping>()
+            )
+        )... { }
+
+
 
     template<std::size_t index>
     auto get() -> meta::at_t<meta::sequence<Ts...>, index>& {
@@ -40,7 +59,7 @@ struct tuple_impl<meta::index_sequence<Indices...>, Ts...> : tuple_leaf<Indices,
     }
 
     template<std::size_t index>
-    auto get() const -> const meta::at_t<meta::sequence<Ts...>, index>& {
+    constexpr auto get() const -> const meta::at_t<meta::sequence<Ts...>, index>& {
         return tuple_leaf<index, meta::at_t<meta::sequence<Ts...>, index>>::get();
     }
 };
