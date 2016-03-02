@@ -15,9 +15,8 @@ struct sort;
 /// specializatio nfor empty sequence
 template<template<typename...> class Cont, template<typename...> class LessThan>
 struct sort<Cont<>, LessThan> {
-	using type = Cont<>;
+    using type = Cont<>;
 };
-
 
 template<
     template<typename...> class C, typename Head, typename... Ts,
@@ -26,16 +25,16 @@ template<
 struct sort<C<Head, Ts...>, LessThan> {
 
     // partial application of Compare with Head
-	template<typename T>
-	using bind_lt = LessThan<T, Head>;
+    template<typename T>
+    using bind_lt = LessThan<T, Head>;
 
-	template<typename T>
-	using bind_ge = type_traits::bool_constant<!LessThan<T, Head>::value>;
+    template<typename T>
+    using bind_ge = type_traits::bool_constant<!LessThan<T, Head>::value>;
 
-	using lesser = typename sort<filter_t<C<Ts...>, bind_lt>, LessThan>::type;
-	using greater = typename sort<filter_t<C<Ts...>, bind_ge>, LessThan>::type;
+    using lesser = typename sort<filter_t<C<Ts...>, bind_lt>, LessThan>::type;
+    using greater = typename sort<filter_t<C<Ts...>, bind_ge>, LessThan>::type;
 
-	using type = append_t<lesser, push_front_t<greater, Head>>;
+    using type = append_t<lesser, push_front_t<greater, Head>>;
 };
 
 /**

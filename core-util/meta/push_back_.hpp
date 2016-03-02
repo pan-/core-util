@@ -23,7 +23,6 @@ struct push_back_impl_<C<Ts...>, Elements...> {
 template<typename S, typename... Elements>
 using push_back_ = typename detail::push_back_impl_<S, Elements...>::type;
 
-
 } } // mbed::meta
 
 #endif /* MBED_META_PUSH_BACK__H_ */

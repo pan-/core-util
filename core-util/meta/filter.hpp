@@ -16,7 +16,7 @@ template<
     typename Dummy
 >
 struct filter<Cont<>, Pred, Dummy> {
-	using type = Cont<>;
+    using type = Cont<>;
 };
 
 template<
@@ -28,7 +28,7 @@ struct filter<
     Pred,
     type_traits::enable_if_t<Pred<T1>::value>
 > {
-	using type = push_front_t<
+    using type = push_front_t<
         typename filter<Cont<Ts...>, Pred>::type,
         T1
     >;
@@ -43,7 +43,7 @@ struct filter<
     Pred,
     type_traits::enable_if_t<Pred<T1>::value == false>
 > {
-	using type = typename filter<Cont<Ts...>, Pred>::type;
+    using type = typename filter<Cont<Ts...>, Pred>::type;
 };
 
 /**
